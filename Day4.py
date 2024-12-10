@@ -2,27 +2,23 @@ import math
 directions = [(3, 0), (-3, 0), (0, 3), (0, -3), (3, 3), (3, -3), (-3, 3), (-3, -3)]
 dirnames =["Down", "Up","Right","Left","Down-Right","Down-Left","Up-Right","Up-Left"]
 
-def findWord(grid, word:str, directions, mX,mY):
+def findWord(grid, word:str, directions, mX,mY, mas:bool):
     count = 0
     templist: list = []
     temp =""
     print(mX)
     print(mY)
     for y in range(0,mY):
-        # print("------------------------")
         for x in range(0,mX):
-            # print("------------------------")
-            # print(f"{x},{y}")
             for dirs in directions:
                 dX = dirs[1]
                 dY = dirs[0]
-                # print(dirnames[directions.index(dirs)])
+                if mas and (dX == 0 or dY == 0):
+                    continue
                 if x+dX > mX or y+dY > mY or x+dX <-1 or y+dY <-1:
-                    # print(f"Out of range at {x},{y}")
                     temp =""
                     continue
                 else:
-                    
                     yStep: int = find_yStep(y,dY)
                     xStep: int = find_xStep(x,dX)
                     i = x
@@ -37,17 +33,29 @@ def findWord(grid, word:str, directions, mX,mY):
                         i+=xStep
                         if j == y+dY and i == x+dX:
                             break 
-
                     if temp == word:
-
                         count+=1
-                        templist.append(((x+x+dX-(find_xStep(x,dX))),(y+y+dY-find_yStep(y,dY))))
-                    # print(count)
-                    
+                        templist.append(((x+(find_xStep(x,dX))),(y+find_yStep(y,dY))))
                     temp =""
-    print(templist)
+    print(f"Duplicates =  {find_duplicates(templist)}")
                     
     return count
+
+def find_duplicates(inputList:list):
+    dupList:list =[]
+    count = 0
+    print(inputList)
+    while len(inputList) != 0:
+        # print(inputList)
+        current = inputList.pop()
+        if current in inputList: 
+            count+=1
+            dupList.append(current)
+            inputList.remove(current)
+        # print(inputList)
+    print(dupList)
+    return count
+
 
 def find_yStep(y,dY):
     yStep = 1
@@ -74,7 +82,7 @@ def checkCross(pointList):
 
 
 
-file = open("Test4.txt","r")
+file = open("Day4.txt","r")
 
 
 
@@ -84,4 +92,4 @@ for line in matrix:
     if line.__contains__("\n"):
         line.remove("\n")
  
-print(findWord(matrix,"MAS",directions,len(matrix[0]),len(matrix)))
+print(findWord(matrix,"MAS",directions,len(matrix[0]),len(matrix), True))
